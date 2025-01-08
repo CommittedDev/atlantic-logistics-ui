@@ -1,10 +1,13 @@
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
+import '@mantine/nprogress/styles.css';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from '@mantine/notifications';
 import theme from '@/theme/theme';
 import { StoreProvider } from '@/redux/StoreProvider';
+import { NavigationProgress } from '@mantine/nprogress';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,12 +28,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <StoreProvider>
-          <MantineProvider theme={theme}>
+        <MantineProvider theme={theme}>
+          <StoreProvider>
+            <NavigationProgress />
             <Notifications />
             {children}
-          </MantineProvider>
-        </StoreProvider>
+          </StoreProvider>
+        </MantineProvider>
       </body>
     </html>
   );

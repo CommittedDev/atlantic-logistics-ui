@@ -50,4 +50,9 @@ export const signIn = (data: SignInData) => async (dispatch: AppDispatch) => {
   }
 };
 
+export const signOut = () => (dispatch: AppDispatch) => {
+  dispatch(loginFailure());
+  setAccessToken("");
+};
+
 export default authSlice.reducer;

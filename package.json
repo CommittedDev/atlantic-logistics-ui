@@ -12,6 +12,7 @@
     "@mantine/core": "^7.15.2",
     "@mantine/hooks": "^7.15.2",
     "@mantine/notifications": "^7.15.3",
+    "@mantine/nprogress": "^7.15.3",
     "@reduxjs/toolkit": "^2.5.0",
     "axios": "^1.7.9",
     "next": "15.1.3",
