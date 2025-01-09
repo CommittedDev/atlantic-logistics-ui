@@ -25,11 +25,6 @@ const ToggleDarkTheme = () => {
             size="lg"
             color="dark.4"
             onLabel={
-                // <IconSun
-                //     style={{ width: rem(16), height: rem(16) }}
-                //     stroke={2.5}
-                //     color={theme.colors.yellow[4]}
-                // />
                 <Icon
                     icon="bi:moon-stars"
                     style={{ width: rem(16), height: rem(16) }}
@@ -37,11 +32,6 @@ const ToggleDarkTheme = () => {
                 />
             }
             offLabel={
-                // <IconMoonStars
-                //     style={{ width: rem(16), height: rem(16) }}
-                //     stroke={2.5}
-                //     color={theme.colors.blue[6]}
-                // />
                 <Icon
                     icon="bi:sun"
                     style={{ width: rem(16), height: rem(16) }}

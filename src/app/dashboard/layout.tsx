@@ -52,20 +52,55 @@ const Layout = ({ children }: { children: ReactNode }) => {
                         transition: 'width 0.3s', //Smooth transition for collapsing/expanding
                     }}
                 >
-                    {navItems.map((item) => (
+                    {/* Top-aligned item */}
+                    <div>
                         <NavLink
-                            key={item.route}
-                            label={collapsed ? undefined : item.label} // Hide label when collapsed
+                            key={navItems[0].route}
+                            label={collapsed ? undefined : navItems[0].label} // Hide label when collapsed
                             component={Link}
-                            href={item.route}
-                            active={pathname === item.route}
-                            leftSection={<Icon icon={item.icon ?? ''} width={20} height={20} />}
+                            href={navItems[0].route}
+                            active={pathname === navItems[0].route}
+                            leftSection={<Icon icon={navItems[0].icon ?? ''} width={20} height={20} />}
                             style={{
                                 justifyContent: 'flex-start', // Keep alignment consistent
                                 paddingLeft: collapsed ? '1rem' : '1.5rem', // Adjust padding for icons
                             }}
                         />
-                    ))}
+                    </div>
+
+                    {/* Center-aligned items */}
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        {navItems.slice(1, -1).map((item) => (
+                            <NavLink
+                                key={item.route}
+                                label={collapsed ? undefined : item.label} // Hide label when collapsed
+                                component={Link}
+                                href={item.route}
+                                active={pathname === item.route}
+                                leftSection={<Icon icon={item.icon ?? ''} width={20} height={20} />}
+                                style={{
+                                    justifyContent: 'flex-start', // Keep alignment consistent
+                                    paddingLeft: collapsed ? '1rem' : '1.5rem', // Adjust padding for icons
+                                }}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Bottom-aligned item */}
+                    <div>
+                        <NavLink
+                            key={navItems[navItems.length - 1].route}
+                            label={collapsed ? undefined : navItems[navItems.length - 1].label} // Hide label when collapsed
+                            component={Link}
+                            href={navItems[navItems.length - 1].route}
+                            active={pathname === navItems[navItems.length - 1].route}
+                            leftSection={<Icon icon={navItems[navItems.length - 1].icon ?? ''} width={20} height={20} />}
+                            style={{
+                                justifyContent: 'flex-start', // Keep alignment consistent
+                                paddingLeft: collapsed ? '1rem' : '1.5rem', // Adjust padding for icons
+                            }}
+                        />
+                    </div>
                 </AppShell.Navbar>
                 <AppShell.Main>{children}</AppShell.Main>
             </AppShell>
