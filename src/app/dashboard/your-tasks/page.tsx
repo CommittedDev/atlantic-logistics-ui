@@ -2,6 +2,7 @@ import React from 'react'
 import { Icon } from '@iconify/react';
 import TaskCategoryItem from '@/components/task-category-item/TaskCategoryItem'
 import { Flex, Input, ScrollArea } from '@mantine/core'
+import TaskListItem from '@/components/task-list-item/TaskListItem';
 
 const page = () => {
     return (
@@ -20,10 +21,29 @@ const page = () => {
                     </ScrollArea>
                 </div>
                 <div style={{ width: '70%' }}>
-                    <Input placeholder="Search" variant="filled"
-                        leftSection={<Icon icon="material-symbols:search" width={20} height={20} />}
-                        rightSection={<Icon icon="mage:filter" width={20} height={20} />}
-                    />
+                    <div style={{ marginBottom: 45 }}>
+                        <Input placeholder="Search" variant="filled"
+                            leftSection={<Icon icon="material-symbols:search" width={20} height={20} />}
+                            rightSection={<Icon icon="mage:filter" width={20} height={20} />}
+                        />
+
+                    </div>
+                    <div>
+                        <ScrollArea style={{ height: '78vh' }} offsetScrollbars>
+                            <TaskListItem />
+                            <TaskListItem />
+                            <TaskListItem />
+                            <TaskListItem />
+                            <TaskListItem />
+                            <TaskListItem />
+                            <TaskListItem />
+                            <TaskListItem />
+                            <TaskListItem />
+                            <TaskListItem />
+                            <TaskListItem />
+                            <TaskListItem />
+                        </ScrollArea>
+                    </div>
                 </div>
             </Flex>
         </div>

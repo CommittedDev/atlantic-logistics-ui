@@ -2,12 +2,18 @@ import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import '@mantine/nprogress/styles.css';
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from '@mantine/notifications';
 import theme from '@/theme/theme';
 import { StoreProvider } from '@/redux/StoreProvider';
 import { NavigationProgress } from '@mantine/nprogress';
+
+const poppins = Poppins({
+  weight: ['400', '500', '600', '700'],
+  subsets: ["latin"],
+  variable: "--font-poppins",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +33,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable}`}>
         <MantineProvider theme={theme}>
           <StoreProvider>
             <NavigationProgress />
