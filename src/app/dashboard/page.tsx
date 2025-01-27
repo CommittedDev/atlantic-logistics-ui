@@ -7,7 +7,7 @@ const Page = () => {
   const router = useRouter();
 
   useEffect(() => {
-    router.push('/dashboard/home');
+    router.push('/dashboard/your-tasks');
   }, [router]);
 
   return null;

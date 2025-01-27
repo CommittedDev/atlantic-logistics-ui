@@ -1,13 +1,12 @@
 'use client';
 
-import * as React from 'react';
+import React from 'react';
 import {styled, useTheme, Theme, CSSObject} from '@mui/material/styles';
 import {useRouter, usePathname} from 'next/navigation';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar, {AppBarProps as MuiAppBarProps} from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
@@ -15,12 +14,15 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import HexagonIcon from '@mui/icons-material/Hexagon';
 import ListItemText from '@mui/material/ListItemText';
-import HomeIcon from '@mui/icons-material/Home';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import AuthProvider from '@/auth/AuthProvider';
 import {LinearProgress, Menu, MenuItem} from '@mui/material';
 import {useDispatch, useSelector} from 'react-redux';
@@ -122,12 +124,9 @@ export default function Layout({children}: {children: React.ReactNode}) {
   const handleDrawerClose = () => setOpen(false);
 
   const navItems = [
-    {text: 'Home', icon: <HomeIcon />, path: '/dashboard/home'},
-    {
-      text: 'Your Tasks',
-      icon: <AccountCircleIcon />,
-      path: '/dashboard/your-tasks',
-    },
+    {text: 'Your Tasks', icon: <AddCircleIcon />, path: '/dashboard/your-tasks'},
+    {text: 'Account', icon: <AccountCircleIcon />, path: '/dashboard/account'},
+    {text: 'Work', icon: <BusinessCenterIcon />, path: '/dashboard/work'},
   ];
 
   return (
@@ -143,9 +142,7 @@ export default function Layout({children}: {children: React.ReactNode}) {
             <Typography
               variant="h6"
               noWrap
-              component="a"
               sx={{
-                mr: 2,
                 display: {xs: 'none', md: 'flex'},
                 fontWeight: 700,
                 color: 'inherit',
@@ -156,23 +153,10 @@ export default function Layout({children}: {children: React.ReactNode}) {
 
             <Box sx={{flexGrow: 1}} />
             <div>
-              <IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleMenu} color="inherit">
+              <IconButton size="large" aria-label="account of current user" onClick={handleMenu} color="inherit">
                 <AccountCircle />
               </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'bottom', // Position the menu below the icon
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top', // Ensure it opens downward from the top of the menu
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}>
+              <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 <MenuItem onClick={() => dispatch(SignOut(router))}>Sign Out</MenuItem>
               </Menu>
             </div>
@@ -184,22 +168,42 @@ export default function Layout({children}: {children: React.ReactNode}) {
             <IconButton onClick={handleDrawerClose}>{theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}</IconButton>
           </DrawerHeader>
           <Divider />
-          <List>
+
+          {/* Top navigation item */}
+          <ListItem disablePadding onClick={() => router.push('/dashboard/notifications')}>
+            <ListItemButton selected={pathname === '/dashboard/notifications'}>
+              <ListItemIcon>
+                <NotificationsActiveIcon />
+              </ListItemIcon>
+              <ListItemText primary="Notifications" />
+            </ListItemButton>
+          </ListItem>
+
+          <Divider />
+
+          {/* Centered navigation items */}
+          <Box sx={{flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
             {navItems.map(item => (
-              <ListItem key={item.text} disablePadding sx={{display: 'block'}} onClick={() => router.push(item.path)}>
-                <ListItemButton
-                  sx={[
-                    {minHeight: 48, px: 2.5},
-                    open ? {justifyContent: 'initial'} : {justifyContent: 'center'},
-                    pathname === item.path && {backgroundColor: theme.palette.action.selected},
-                  ]}>
-                  <ListItemIcon sx={[{minWidth: 0, justifyContent: 'center'}, open ? {mr: 3} : {mr: 'auto'}]}>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} sx={[open ? {opacity: 1} : {opacity: 0}]} />
+              <ListItem key={item.text} disablePadding onClick={() => router.push(item.path)}>
+                <ListItemButton selected={pathname === item.path}>
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.text} />
                 </ListItemButton>
               </ListItem>
             ))}
-          </List>
+          </Box>
+
           <Divider />
+
+          {/* Bottom navigation item */}
+          <ListItem disablePadding onClick={() => router.push('/dashboard/settings')}>
+            <ListItemButton selected={pathname === '/dashboard/settings'}>
+              <ListItemIcon>
+                <HexagonIcon />
+              </ListItemIcon>
+              <ListItemText primary="Settings" />
+            </ListItemButton>
+          </ListItem>
         </Drawer>
         <Box component="main" sx={{flexGrow: 1, p: 3}}>
           <DrawerHeader />

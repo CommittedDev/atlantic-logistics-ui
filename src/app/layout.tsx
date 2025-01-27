@@ -10,8 +10,8 @@ import {ThemeProvider} from '@mui/material';
 import React, {ReactNode} from 'react';
 
 export const metadata = {
-  title: 'My App',
-  description: 'My app description',
+  title: 'Atlatic Logistics',
+  description: 'Atlatic Logistics',
 };
 
 const RootLayout = ({children}: {children: ReactNode}) => {

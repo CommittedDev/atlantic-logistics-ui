@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Grid from '@mui/material/Grid2';
-import { Box, Card, CardActionArea, CardContent, Stack, Typography } from '@mui/material';
+import {Box, Card, CardActionArea, CardContent, MenuItem, Select, Stack, Typography} from '@mui/material';
 import SellIcon from '@mui/icons-material/Sell';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import ScheduleIcon from '@mui/icons-material/Schedule';
@@ -17,9 +17,9 @@ const CategoriesSection = () => {
       color: '#FF7676',
       count: 10,
       details: [
-        { icon: <SellIcon />, title: 'Quote Requests', count: 10 },
-        { icon: <LocalShippingIcon />, title: 'Truck Off Schedule', count: 8 },
-        { icon: <ScheduleIcon />, title: 'Late Deliveries', count: 6 },
+        {icon: <SellIcon />, title: 'Quote Requests', count: 10},
+        {icon: <LocalShippingIcon />, title: 'Truck Off Schedule', count: 8},
+        {icon: <ScheduleIcon />, title: 'Late Deliveries', count: 6},
       ],
     },
     {
@@ -28,8 +28,8 @@ const CategoriesSection = () => {
       color: '#FFC862',
       count: 7,
       details: [
-        { icon: <SellIcon />, title: 'Quote Requests', count: 10 },
-        { icon: <LocalShippingIcon />, title: 'Truck Off Schedule', count: 8 },
+        {icon: <SellIcon />, title: 'Quote Requests', count: 10},
+        {icon: <LocalShippingIcon />, title: 'Truck Off Schedule', count: 8},
       ],
     },
     {
@@ -38,8 +38,8 @@ const CategoriesSection = () => {
       color: '#B8D82A',
       count: 2,
       details: [
-        { icon: <SellIcon />, title: 'Quote Requests', count: 10 },
-        { icon: <LocalShippingIcon />, title: 'Truck Off Schedule', count: 8 },
+        {icon: <SellIcon />, title: 'Quote Requests', count: 10},
+        {icon: <LocalShippingIcon />, title: 'Truck Off Schedule', count: 8},
       ],
     },
   ];
@@ -53,17 +53,27 @@ const CategoriesSection = () => {
           sx={{
             justifyContent: 'space-between',
             alignItems: 'center',
-          }}
-        >
-          <Typography sx={{ fontWeight: 300, fontSize: 28 }}>Your Tasks</Typography>
-          <Stack direction="row" spacing={1}>
-            <Typography sx={{ fontWeight: 400, fontSize: 14, color: '#A8A8A8' }}>sort by</Typography>
-            <Typography sx={{ fontWeight: 400, fontSize: 14 }}>status</Typography>
+          }}>
+          <Typography sx={{fontWeight: 300, fontSize: 28}}>Your Tasks</Typography>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Typography sx={{fontWeight: 400, fontSize: 14, color: '#A8A8A8', display: 'flex', alignItems: 'center'}}>sort by</Typography>
+            <Select
+              value="status"
+              variant="standard"
+              disableUnderline
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                '&::before': {borderBottom: 'none'}, // Removes underline
+                '&::after': {borderBottom: 'none'}, // Removes underline when focused
+              }}>
+              <MenuItem value="status">status</MenuItem>
+            </Select>
           </Stack>
         </Stack>
       </Grid>
 
-      <Grid container direction="column" spacing={2} sx={{ mt: 3 }} component="div">
+      <Grid container direction="column" spacing={2} sx={{mt: 3}} component="div">
         {cards.map((card, index) => (
           <Grid key={card.id} size={12} component="div">
             <Card variant="outlined">
@@ -82,8 +92,7 @@ const CategoriesSection = () => {
                     border: '2px solid #616161',
                     borderRadius: 2,
                   },
-                }}
-              >
+                }}>
                 <CardContent>
                   <Grid container alignItems="center" spacing={2} component="div">
                     <Grid component="div">
@@ -99,20 +108,20 @@ const CategoriesSection = () => {
 
                     {/* Title and Count */}
                     <Grid component="div">
-                      <Typography sx={{ fontWeight: 400, fontSize: 16 }}>{card.title}</Typography>
-                      <Typography sx={{ fontWeight: 500, fontSize: 24 }}>{card.count}</Typography>
+                      <Typography sx={{fontWeight: 400, fontSize: 16}}>{card.title}</Typography>
+                      <Typography sx={{fontWeight: 500, fontSize: 24}}>{card.count}</Typography>
                     </Grid>
                   </Grid>
 
-                  <Card variant="outlined" sx={{ mt: 2, p: 2 }}>
+                  <Card variant="outlined" sx={{mt: 2, p: 2}}>
                     {card.details.map((detail, idx) => (
-                      <Grid container key={idx} alignItems="center" spacing={1} sx={{ mb: 1 }} component="div">
+                      <Grid container key={idx} alignItems="center" spacing={1} sx={{mb: 1}} component="div">
                         <Grid component="div">{detail.icon}</Grid>
-                        <Grid sx={{ flexGrow: 1 }} component="div">
-                          <Typography sx={{ fontWeight: 400, fontSize: 15 }}>{detail.title}</Typography>
+                        <Grid sx={{flexGrow: 1}} component="div">
+                          <Typography sx={{fontWeight: 400, fontSize: 15}}>{detail.title}</Typography>
                         </Grid>
                         <Grid component="div">
-                          <Typography sx={{ fontWeight: 500 }}>{detail.count}</Typography>
+                          <Typography sx={{fontWeight: 500}}>{detail.count}</Typography>
                         </Grid>
                       </Grid>
                     ))}

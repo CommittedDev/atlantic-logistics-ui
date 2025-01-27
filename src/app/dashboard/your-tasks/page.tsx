@@ -11,10 +11,10 @@ import SearchIcon from '@mui/icons-material/Search';
 const Page = () => {
   return (
     <Grid container spacing={2}>
-      <Grid size={3}>
+      <Grid size={2.2}>
         <CategoriesSection />
       </Grid>
-      <Grid size={9}>
+      <Grid size={9.8}>
         <Paper variant="outlined" component="form" sx={{p: '2px 4px', display: 'flex', alignItems: 'center', backgroundColor: '#F3F3F3'}}>
           <IconButton sx={{p: '10px'}} aria-label="menu">
             <SearchIcon />
