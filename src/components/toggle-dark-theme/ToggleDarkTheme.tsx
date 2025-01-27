@@ -1,46 +1,38 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { Switch, useMantineTheme, rem, useMantineColorScheme } from '@mantine/core';
-import { Icon } from '@iconify/react';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import FormControl from "@mui/material/FormControl";
+import { useColorScheme } from "@mui/material/styles";
+import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 
-const ToggleDarkTheme = () => {
-    const theme = useMantineTheme();
-    const { colorScheme, setColorScheme } = useMantineColorScheme({ keepTransitions: true });
-    const [clientColorScheme, setClientColorScheme] = useState<'light' | 'dark' | null>(null);
-
-    useEffect(() => {
-        if (colorScheme === 'light' || colorScheme === 'dark') setClientColorScheme(colorScheme);
-    }, [colorScheme]);
-
-    const toggleColorScheme = (value?: 'light' | 'dark') =>
-        setColorScheme(value || (clientColorScheme === 'dark' ? 'light' : 'dark'));
-
-    if (clientColorScheme === null) return null; // Wait for client-side rendering
-
-    return (
-        <Switch
-            checked={clientColorScheme === 'dark'}
-            onChange={() => toggleColorScheme()}
-            size="lg"
-            color="dark.4"
-            onLabel={
-                <Icon
-                    icon="bi:moon-stars"
-                    style={{ width: rem(16), height: rem(16) }}
-                    color={theme.colors.blue[6]}
-                />
-            }
-            offLabel={
-                <Icon
-                    icon="bi:sun"
-                    style={{ width: rem(16), height: rem(16) }}
-                    color={theme.colors.yellow[4]}
-                />
-            }
-            aria-label="Toggle between light and dark themes"
-        />
-    );
-};
-
-export default ToggleDarkTheme;
+export default function ToggleDarkTheme() {
+  const { mode, setMode } = useColorScheme();
+  if (!mode) {
+    return null;
+  }
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "flex-end",
+        mt: 1,
+        p: 1,
+      }}
+    >
+      <FormControl>
+        <ToggleButtonGroup
+          color="primary"
+          value={mode}
+          exclusive
+          onChange={(event, newMode) => setMode(newMode)}
+          aria-label="Platform"
+        >
+          <ToggleButton value="system">System</ToggleButton>
+          <ToggleButton value="dark">Dark</ToggleButton>
+          <ToggleButton value="light">Light</ToggleButton>
+        </ToggleButtonGroup>
+      </FormControl>
+    </Box>
+  );
+}

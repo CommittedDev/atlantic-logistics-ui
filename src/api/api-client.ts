@@ -1,8 +1,9 @@
+import {getAccessToken} from '@/helpers/token-helper';
 import axios from 'axios';
 
-const baseURL = 'https://talking-apps-channels-server.onrender.com/';
+const baseURL = 'http://localhost:4000/';
 
-const myApiClient = axios.create({
+const ApiClient = axios.create({
   baseURL,
   timeout: 30000,
   headers: {
@@ -14,7 +15,24 @@ const myApiClient = axios.create({
     mode: 'cors',
     redirect: 'follow',
     referrer: 'no-referrer',
+    withCredentials: true,
   },
 });
 
-export default myApiClient;
+ApiClient.interceptors.request.use(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async (config: any) => {
+    const accessToken = await getAccessToken();
+    const headers = {
+      ...config.headers,
+      Authorization: `Bearer ${accessToken}`,
+      // 'x-refresh-token': refreshToken,
+    };
+    return {...config, headers};
+  },
+  error => {
+    Promise.reject(error);
+  },
+);
+
+export default ApiClient;

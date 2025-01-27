@@ -1,26 +1,24 @@
-'use client'
+import { selectIsLoggedIn } from "@/redux/selectors/auth-selector";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 
-import { RootState } from '@/redux/store'
-import { useRouter } from 'next/navigation'
-import React, { ReactNode, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { ReactNode } from "react";
+import { useSelector } from "react-redux";
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn)
-    const router = useRouter()
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const router = useRouter();
 
-    // useEffect is used to perform navigation after the component has rendered
-    useEffect(() => {
-        if (!isLoggedIn) {
-            // Redirect to the login page if not logged in
-            router.push('/auth/sign-in')
-        }
-    }, [isLoggedIn, router]) // Depend on isLoggedIn to trigger navigation when the auth state changes
+  useEffect(() => {
+    if (!isLoggedIn) router.push("/auth/sign-in");
+  }, [isLoggedIn, router]);
 
-    // If the user is not logged in, prevent rendering of children
-    if (!isLoggedIn) return null
+  if (!isLoggedIn) {
+    // Return null to avoid rendering children during redirect
+    return null;
+  }
 
-    return <>{children}</> // Render children only if the user is logged in
-}
+  return <>{children}</>;
+};
 
-export default AuthProvider
+export default AuthProvider;

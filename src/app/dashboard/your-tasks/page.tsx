@@ -1,53 +1,51 @@
-import React from 'react'
-import { Icon } from '@iconify/react';
-import TaskCategoryItem from '@/components/task-category-item/TaskCategoryItem'
-import { Flex, Input, ScrollArea } from '@mantine/core'
-import TaskListItem from '@/components/task-list-item/TaskListItem';
+'use client';
 
-const page = () => {
-    return (
-        <div>
-            <Flex
-                direction={{ base: 'column', sm: 'row' }}
-                gap={{ base: 'sm', sm: 'lg' }}
-                justify={{ sm: 'flex-start' }}
-            >
-                <div style={{ width: '30%' }}>
-                    <h2>Your Tasks</h2>
-                    <ScrollArea style={{ height: '78vh' }} offsetScrollbars>
-                        <TaskCategoryItem title="Critical" stripeColor='#FF7676' count={5} />
-                        <TaskCategoryItem title="High" stripeColor='#FFC862' count={8} />
-                        <TaskCategoryItem title="Medium" stripeColor='#B8D82A' count={10} />
-                    </ScrollArea>
-                </div>
-                <div style={{ width: '70%' }}>
-                    <div style={{ marginBottom: 45 }}>
-                        <Input placeholder="Search" variant="filled"
-                            leftSection={<Icon icon="material-symbols:search" width={20} height={20} />}
-                            rightSection={<Icon icon="mage:filter" width={20} height={20} />}
-                        />
+import React from 'react';
+import Grid from '@mui/material/Grid2';
+import CategoriesSection from '@/components/your-tasks/categories-section/CategoriesSection';
+import TaskListItem from '@/components/your-tasks/task-list-item/TaskListItem';
+import {Box, IconButton, InputBase, Paper} from '@mui/material';
+import TuneIcon from '@mui/icons-material/Tune';
+import SearchIcon from '@mui/icons-material/Search';
 
-                    </div>
-                    <div>
-                        <ScrollArea style={{ height: '78vh' }} offsetScrollbars>
-                            <TaskListItem />
-                            <TaskListItem />
-                            <TaskListItem />
-                            <TaskListItem />
-                            <TaskListItem />
-                            <TaskListItem />
-                            <TaskListItem />
-                            <TaskListItem />
-                            <TaskListItem />
-                            <TaskListItem />
-                            <TaskListItem />
-                            <TaskListItem />
-                        </ScrollArea>
-                    </div>
-                </div>
-            </Flex>
-        </div>
-    )
-}
+const Page = () => {
+  return (
+    <Grid container spacing={2}>
+      <Grid size={3}>
+        <CategoriesSection />
+      </Grid>
+      <Grid size={9}>
+        <Paper variant="outlined" component="form" sx={{p: '2px 4px', display: 'flex', alignItems: 'center', backgroundColor: '#F3F3F3'}}>
+          <IconButton sx={{p: '10px'}} aria-label="menu">
+            <SearchIcon />
+          </IconButton>
+          <InputBase sx={{ml: 1, flex: 1}} placeholder="Search Activity" />
+          <IconButton type="button" sx={{p: '10px'}} aria-label="search">
+            <TuneIcon />
+          </IconButton>
+        </Paper>
 
-export default page
+        <Box
+          sx={{
+            flex: 1,
+            overflowY: 'auto',
+            mt: 2,
+            p: 1,
+            width: '100%',
+            maxHeight: '80vh',
+          }}>
+          <TaskListItem />
+          <TaskListItem />
+          <TaskListItem />
+          <TaskListItem />
+          <TaskListItem />
+          <TaskListItem />
+          <TaskListItem />
+          <TaskListItem />
+        </Box>
+      </Grid>
+    </Grid>
+  );
+};
+
+export default Page;

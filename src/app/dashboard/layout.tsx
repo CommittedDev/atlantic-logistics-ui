@@ -1,111 +1,211 @@
 'use client';
 
-import React, { ReactNode } from 'react';
-import Link from 'next/link';
-import { Icon } from '@iconify/react';
-import { AppShell, Burger, Group, NavLink } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { usePathname } from 'next/navigation';
+import * as React from 'react';
+import {styled, useTheme, Theme, CSSObject} from '@mui/material/styles';
+import {useRouter, usePathname} from 'next/navigation';
+import Box from '@mui/material/Box';
+import MuiDrawer from '@mui/material/Drawer';
+import MuiAppBar, {AppBarProps as MuiAppBarProps} from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import List from '@mui/material/List';
+import CssBaseline from '@mui/material/CssBaseline';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import HomeIcon from '@mui/icons-material/Home';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AuthProvider from '@/auth/AuthProvider';
+import {LinearProgress, Menu, MenuItem} from '@mui/material';
+import {useDispatch, useSelector} from 'react-redux';
+import {selectLoading} from '@/redux/selectors/common-selector';
+import LogoDevIcon from '@mui/icons-material/LogoDev';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import {AppDispatch} from '@/redux/store';
+import {SignOut} from '@/redux/reducers/auth-slice';
 
-const Layout = ({ children }: { children: ReactNode }) => {
-    const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
-    const [collapsed, { toggle: toggleCollapsed }] = useDisclosure(false); // Manage collapsed state
-    const pathname = usePathname();
+const drawerWidth = 240;
 
-    // Define the navigation items
-    const navItems = [
-        { label: 'Notifications', route: '/dashboard/notifications', icon: 'fontisto:bell' },
-        { label: 'New Task', route: '/dashboard/new-task', icon: 'material-symbols:add-circle-rounded' },
-        { label: 'Your Tasks', route: '/dashboard/your-tasks', icon: 'solar:user-circle-linear' },
-        { label: 'Work', route: '/dashboard/work', icon: 'fluent-mdl2:work' },
-        { label: 'Settings', route: '/dashboard/settings', icon: 'mynaui:stop-hexagon' },
-    ];
+const openedMixin = (theme: Theme): CSSObject => ({
+  width: drawerWidth,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
+});
 
-    return (
-        <AuthProvider>
-            <AppShell
-                header={{ height: 60 }}
-                navbar={{
-                    width: collapsed ? 90 : 300, //Adjust width based on collapsed state
-                    breakpoint: 'sm',
-                    collapsed: { mobile: !mobileOpened },
+const closedMixin = (theme: Theme): CSSObject => ({
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+
+const DrawerHeader = styled('div')(({theme}) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  padding: theme.spacing(0, 1),
+  ...theme.mixins.toolbar,
+}));
+
+interface AppBarProps extends MuiAppBarProps {
+  open?: boolean;
+}
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: prop => prop !== 'open',
+})<AppBarProps>(({theme, open}) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: prop => prop !== 'open',
+})(({theme, open}) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  boxSizing: 'border-box',
+  ...(open && {
+    ...openedMixin(theme),
+    '& .MuiDrawer-paper': openedMixin(theme),
+  }),
+  ...(!open && {
+    ...closedMixin(theme),
+    '& .MuiDrawer-paper': closedMixin(theme),
+  }),
+}));
+
+export default function Layout({children}: {children: React.ReactNode}) {
+  const isLoading = useSelector(selectLoading);
+  const theme = useTheme();
+  const [open, setOpen] = React.useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleDrawerOpen = () => setOpen(true);
+  const handleDrawerClose = () => setOpen(false);
+
+  const navItems = [
+    {text: 'Home', icon: <HomeIcon />, path: '/dashboard/home'},
+    {
+      text: 'Your Tasks',
+      icon: <AccountCircleIcon />,
+      path: '/dashboard/your-tasks',
+    },
+  ];
+
+  return (
+    <AuthProvider>
+      <Box sx={{display: 'flex'}}>
+        <CssBaseline />
+        <AppBar position="fixed" open={open}>
+          <Toolbar>
+            <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" sx={[{marginRight: 5}, open && {display: 'none'}]}>
+              <MenuIcon />
+            </IconButton>
+            <LogoDevIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}} />
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              sx={{
+                mr: 2,
+                display: {xs: 'none', md: 'flex'},
+                fontWeight: 700,
+                color: 'inherit',
+                textDecoration: 'none',
+              }}>
+              ATLANTIC LOGISTICS
+            </Typography>
+
+            <Box sx={{flexGrow: 1}} />
+            <div>
+              <IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleMenu} color="inherit">
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'bottom', // Position the menu below the icon
+                  horizontal: 'right',
                 }}
-                padding="md"
-            >
-                <AppShell.Header>
-                    <Group h="100%" px="md">
-                        <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
-                        <Burger
-                            opened={!collapsed}
-                            onClick={toggleCollapsed}
-                            visibleFrom="sm"
-                            size="sm"
-                        // style={{ marginLeft: 'auto' }}
-                        />
-                    </Group>
-                </AppShell.Header>
-                <AppShell.Navbar
-                    p="md"
-                    style={{
-                        overflow: 'hidden', //Prevent content overflow when collapsed
-                        transition: 'width 0.3s', //Smooth transition for collapsing/expanding
-                    }}
-                >
-                    {/* Top-aligned item */}
-                    <div>
-                        <NavLink
-                            key={navItems[0].route}
-                            label={collapsed ? undefined : navItems[0].label} // Hide label when collapsed
-                            component={Link}
-                            href={navItems[0].route}
-                            active={pathname === navItems[0].route}
-                            leftSection={<Icon icon={navItems[0].icon ?? ''} width={20} height={20} />}
-                            style={{
-                                justifyContent: 'flex-start', // Keep alignment consistent
-                                paddingLeft: collapsed ? '1rem' : '1.5rem', // Adjust padding for icons
-                            }}
-                        />
-                    </div>
-
-                    {/* Center-aligned items */}
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                        {navItems.slice(1, -1).map((item) => (
-                            <NavLink
-                                key={item.route}
-                                label={collapsed ? undefined : item.label} // Hide label when collapsed
-                                component={Link}
-                                href={item.route}
-                                active={pathname === item.route}
-                                leftSection={<Icon icon={item.icon ?? ''} width={20} height={20} />}
-                                style={{
-                                    justifyContent: 'flex-start', // Keep alignment consistent
-                                    paddingLeft: collapsed ? '1rem' : '1.5rem', // Adjust padding for icons
-                                }}
-                            />
-                        ))}
-                    </div>
-
-                    {/* Bottom-aligned item */}
-                    <div>
-                        <NavLink
-                            key={navItems[navItems.length - 1].route}
-                            label={collapsed ? undefined : navItems[navItems.length - 1].label} // Hide label when collapsed
-                            component={Link}
-                            href={navItems[navItems.length - 1].route}
-                            active={pathname === navItems[navItems.length - 1].route}
-                            leftSection={<Icon icon={navItems[navItems.length - 1].icon ?? ''} width={20} height={20} />}
-                            style={{
-                                justifyContent: 'flex-start', // Keep alignment consistent
-                                paddingLeft: collapsed ? '1rem' : '1.5rem', // Adjust padding for icons
-                            }}
-                        />
-                    </div>
-                </AppShell.Navbar>
-                <AppShell.Main>{children}</AppShell.Main>
-            </AppShell>
-        </AuthProvider>
-    );
-};
-
-export default Layout;
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top', // Ensure it opens downward from the top of the menu
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}>
+                <MenuItem onClick={() => dispatch(SignOut(router))}>Sign Out</MenuItem>
+              </Menu>
+            </div>
+          </Toolbar>
+          {isLoading && <LinearProgress sx={{position: 'absolute', bottom: 0, width: '100%'}} />}
+        </AppBar>
+        <Drawer variant="permanent" open={open}>
+          <DrawerHeader>
+            <IconButton onClick={handleDrawerClose}>{theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}</IconButton>
+          </DrawerHeader>
+          <Divider />
+          <List>
+            {navItems.map(item => (
+              <ListItem key={item.text} disablePadding sx={{display: 'block'}} onClick={() => router.push(item.path)}>
+                <ListItemButton
+                  sx={[
+                    {minHeight: 48, px: 2.5},
+                    open ? {justifyContent: 'initial'} : {justifyContent: 'center'},
+                    pathname === item.path && {backgroundColor: theme.palette.action.selected},
+                  ]}>
+                  <ListItemIcon sx={[{minWidth: 0, justifyContent: 'center'}, open ? {mr: 3} : {mr: 'auto'}]}>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.text} sx={[open ? {opacity: 1} : {opacity: 0}]} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+        </Drawer>
+        <Box component="main" sx={{flexGrow: 1, p: 3}}>
+          <DrawerHeader />
+          {children}
+        </Box>
+      </Box>
+    </AuthProvider>
+  );
+}

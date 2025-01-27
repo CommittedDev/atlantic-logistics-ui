@@ -1,20 +1,16 @@
 'use client';
 
-import { signOut } from '@/redux/reducers/auth/auth-slice'
-import { Button } from '@mantine/core'
-import React from 'react'
-import { useDispatch } from 'react-redux'
-import type { AppDispatch } from '@/redux/store'
+import {useEffect} from 'react';
+import {useRouter} from 'next/navigation';
 
 const Page = () => {
-  const dispatch = useDispatch<AppDispatch>()
+  const router = useRouter();
 
-  return (
-    <div>
-      <h1>HELLO</h1>
-      <Button onClick={() => dispatch(signOut())} >sign out</Button>
-    </div>
-  )
-}
+  useEffect(() => {
+    router.push('/dashboard/home');
+  }, [router]);
 
-export default Page
+  return null;
+};
+
+export default Page;

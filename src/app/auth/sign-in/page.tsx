@@ -1,31 +1,74 @@
 'use client';
 
-import { signIn } from '@/redux/reducers/auth/auth-slice';
-import { AppDispatch, RootState } from '@/redux/store';
-import { Button, Group, Paper, PasswordInput, TextInput } from '@mantine/core'
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useState} from 'react';
+import {Box, Container, CssBaseline, TextField, Typography} from '@mui/material';
+import {useDispatch, useSelector} from 'react-redux';
+import type {AppDispatch} from '@/redux/store';
+import {SignIn} from '@/redux/reducers/auth-slice';
+import {useRouter} from 'next/navigation';
+import {selectLoading} from '@/redux/selectors/auth-selector';
+import {LoadingButton} from '@mui/lab';
 
 const Page = () => {
-  const [username, setUsername] = useState('emilys');
-  const [password, setPassword] = useState('emilyspass');
+  const router = useRouter();
+  const isLoading = useSelector(selectLoading);
   const dispatch = useDispatch<AppDispatch>();
-  const isLoading = useSelector((state: RootState) => state.auth.loading);
-
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  
 
   return (
-    <div>
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        <TextInput label="Email" value={username} required onChange={(e) => setUsername(e.target.value)} />
-        <PasswordInput label="Password" value={password} required mt="md" onChange={(e) => setPassword(e.target.value)} />
-        <Group justify="space-between" mt="lg">
-        </Group>
-        <Button fullWidth mt="xl" disabled={isLoading} loading={isLoading} onClick={() => dispatch(signIn({ username, password }))} >
-          Sign in
-        </Button>
-      </Paper>
-    </div>
-  )
-}
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}>
+        <Typography component="h1" variant="h5">
+          Sign In
+        </Typography>
+        <Box component="form" noValidate sx={{mt: 1}}>
+          <TextField
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+          />
+          <TextField
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+          />
 
-export default Page
+          <LoadingButton
+            loading={isLoading}
+            disabled={isLoading}
+            onClick={() => dispatch(SignIn(username, password, router))}
+            fullWidth
+            variant="contained"
+            sx={{mt: 3, mb: 2}}>
+            Sign In
+          </LoadingButton>
+        </Box>
+      </Box>
+    </Container>
+  );
+};
+
+export default Page;

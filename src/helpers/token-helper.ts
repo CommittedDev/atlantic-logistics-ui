@@ -1,13 +1,11 @@
-const setAccessToken = (accessToken: string) => {
+const setAccessToken = (accessToken: string | null) => {
   if (accessToken) {
-    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem('accessToken', accessToken);
   } else {
-    localStorage.removeItem("accessToken");
+    localStorage.removeItem('accessToken');
   }
 };
 
-const getAccessToken = () => {
-  return localStorage.getItem("accessToken");
-};
+const getAccessToken = () => localStorage.getItem('accessToken');
 
-export { setAccessToken, getAccessToken };
+export {setAccessToken, getAccessToken};

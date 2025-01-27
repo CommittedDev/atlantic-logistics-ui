@@ -1,32 +1,35 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { combineReducers } from 'redux';
+import {combineReducers, configureStore} from '@reduxjs/toolkit';
 import logger from 'redux-logger';
-import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
-import authReducer from './reducers/auth/auth-slice';
-import storage from 'redux-persist/lib/storage';
+import storageSession from 'redux-persist/lib/storage/session';
+import {persistReducer} from 'redux-persist';
+import {persistStore} from 'redux-persist';
 
-
+import authReducer from './reducers/auth-slice';
+import commonReducer from './reducers/common-slice';
+import countriesReducer from './reducers/countries-slice';
 
 const persistConfig = {
   key: 'root',
-  storage,
-  blacklist: [], // Blacklisting a store attribute name, will not persist that store attribute.
-  debug: true, // To get useful logging
+  storage: storageSession,
+  blacklist: [], //reducer names listed here will not be persisted
+  whitelist: ['auth'],
+  debug: true,
 };
 
-
 const rootReducer = combineReducers({
+  common: commonReducer,
   auth: authReducer,
+  countries: countriesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
     }).concat(logger),
 });
