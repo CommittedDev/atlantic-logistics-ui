@@ -1,10 +1,21 @@
-import React from 'react'
+'use client';
+
+import React, { useEffect } from 'react'
 import { Icon } from '@iconify/react';
 import TaskCategoryItem from '@/components/task-category-item/TaskCategoryItem'
 import { Flex, Input, ScrollArea } from '@mantine/core'
 import TaskListItem from '@/components/task-list-item/TaskListItem';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/redux/store';
+import { getTasks } from '@/redux/reducers/tasks/task-slice';
 
-const page = () => {
+const Page = () => {
+    const dispatch = useDispatch<AppDispatch>()
+
+    useEffect(() => {
+        dispatch(getTasks())
+    }, [dispatch])
+
     return (
         <div>
             <Flex
@@ -12,7 +23,7 @@ const page = () => {
                 gap={{ base: 'sm', sm: 'lg' }}
                 justify={{ sm: 'flex-start' }}
             >
-                <div style={{ width: '30%' }}>
+                <div style={{ width: '20%' }}>
                     <h2>Your Tasks</h2>
                     <ScrollArea style={{ height: '78vh' }} offsetScrollbars>
                         <TaskCategoryItem title="Critical" stripeColor='#FF7676' count={5} />
@@ -20,7 +31,7 @@ const page = () => {
                         <TaskCategoryItem title="Medium" stripeColor='#B8D82A' count={10} />
                     </ScrollArea>
                 </div>
-                <div style={{ width: '70%' }}>
+                <div style={{ width: '80%' }}>
                     <div style={{ marginBottom: 45 }}>
                         <Input placeholder="Search" variant="filled"
                             leftSection={<Icon icon="material-symbols:search" width={20} height={20} />}
@@ -50,4 +61,4 @@ const page = () => {
     )
 }
 
-export default page
+export default Page

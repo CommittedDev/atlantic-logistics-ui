@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import logger from 'redux-logger';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import authReducer from './reducers/auth/auth-slice';
+import taskReducer from './reducers/tasks/task-slice';
 import storage from 'redux-persist/lib/storage';
 
 
@@ -17,6 +18,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  task: taskReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
