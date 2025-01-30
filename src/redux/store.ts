@@ -7,6 +7,7 @@ import {persistStore} from 'redux-persist';
 import authReducer from './reducers/auth-slice';
 import commonReducer from './reducers/common-slice';
 import countriesReducer from './reducers/countries-slice';
+import taskReducer from './reducers/tasks-slice';
 
 const persistConfig = {
   key: 'root',
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   common: commonReducer,
   auth: authReducer,
   countries: countriesReducer,
+  task: taskReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

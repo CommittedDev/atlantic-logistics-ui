@@ -6,14 +6,21 @@ import Volatility from './Volatility';
 import PriceHistory from './PriceHistory';
 import SendIcon from '@mui/icons-material/Send';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import {extractDestinationFromRequest, extractEquipmentTypeFromRequest, extractOriginFromRequest} from '@/helpers/data';
 
 interface SeeDetailsDialogProps {
   open: boolean;
   setDialogOpen: (open: boolean) => void;
+  data: object;
 }
 
-const SeeDetailsDialog: React.FC<SeeDetailsDialogProps> = ({open, setDialogOpen}) => {
+const SeeDetailsDialog: React.FC<SeeDetailsDialogProps> = ({open, setDialogOpen, data}) => {
   const handleClose = () => setDialogOpen(false);
+
+  const customer = data.mcleod.customerDetails;
+  const origin = extractOriginFromRequest(data.request);
+  const destination = extractDestinationFromRequest(data.request);
+  const equipmentType = extractEquipmentTypeFromRequest(data.request);
 
   return (
     <Dialog fullWidth maxWidth="xl" open={open} onClose={handleClose}>
@@ -45,38 +52,29 @@ const SeeDetailsDialog: React.FC<SeeDetailsDialogProps> = ({open, setDialogOpen}
             <div>
               <FormControl fullWidth margin="normal">
                 <InputLabel>Customer</InputLabel>
-                <Select variant="filled" defaultValue="ABC Customer">
-                  <MenuItem value="ABC Customer">ABC Customer</MenuItem>
-                  <MenuItem value="XYZ Customer">XYZ Customer</MenuItem>
-                  <MenuItem value="DEF Customer">DEF Customer</MenuItem>
+                <Select variant="filled" defaultValue={customer?.id}>
+                  <MenuItem value={customer?.id}>{customer?.name}</MenuItem>
                 </Select>
               </FormControl>
 
               <FormControl fullWidth margin="normal">
                 <InputLabel>Origin</InputLabel>
-                <Select variant="filled" defaultValue="Tampa, FL">
-                  <MenuItem value="Tampa, FL">Tampa, FL</MenuItem>
-                  <MenuItem value="Orlando, FL">Orlando, FL</MenuItem>
-                  <MenuItem value="Jacksonville, FL">Jacksonville, FL</MenuItem>
+                <Select variant="filled" defaultValue={`${origin?.city}, ${origin?.state}`}>
+                  <MenuItem value={`${origin?.city}, ${origin?.state}`}>{`${origin?.city}, ${origin?.state}`}</MenuItem>
                 </Select>
               </FormControl>
 
               <FormControl fullWidth margin="normal">
                 <InputLabel>Destination</InputLabel>
-                <Select variant="filled" defaultValue="Miami, FL">
-                  <MenuItem value="Miami, FL">Miami, FL</MenuItem>
-                  <MenuItem value="Atlanta, GA">Atlanta, GA</MenuItem>
-                  <MenuItem value="Houston, TX">Houston, TX</MenuItem>
+                <Select variant="filled" defaultValue={`${destination?.city}, ${destination?.state}`}>
+                  <MenuItem value={`${destination?.city}, ${destination?.state}`}>{`${destination?.city}, ${destination?.state}`}</MenuItem>
                 </Select>
               </FormControl>
 
               <FormControl fullWidth margin="normal">
-                <InputLabel>Commodity</InputLabel>
-                <Select variant="filled" defaultValue="">
-                  <MenuItem value="">None</MenuItem>
-                  <MenuItem value="Electronics">Electronics</MenuItem>
-                  <MenuItem value="Furniture">Furniture</MenuItem>
-                  <MenuItem value="Food">Food</MenuItem>
+                <InputLabel>Equipment Type</InputLabel>
+                <Select variant="filled" defaultValue={equipmentType}>
+                  <MenuItem value={equipmentType}>{equipmentType}</MenuItem>
                 </Select>
               </FormControl>
             </div>

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file://D%3A/atlantis-logistics-prod/src/app/dashboard/page.tsx"],"sourcesContent":["'use client';\n\nimport {useEffect} from 'react';\nimport {useRouter} from 'next/navigation';\n\nconst Page = () => {\n  const router = useRouter();\n\n  useEffect(() => {\n    router.push('/dashboard/home');\n  }, [router]);\n\n  return null;\n};\n\nexport default Page;\n"],"names":[],"mappings":";;;AAEA;AACA;;AAHA;;;AAKA,MAAM,OAAO;;IACX,MAAM,SAAS,CAAA,GAAA,qIAAA,CAAA,YAAS,AAAD;IAEvB,CAAA,GAAA,6JAAA,CAAA,YAAS,AAAD;0BAAE;YACR,OAAO,IAAI,CAAC;QACd;yBAAG;QAAC;KAAO;IAEX,OAAO;AACT;GARM;;QACW,qIAAA,CAAA,YAAS;;;KADpB;uCAUS"}},
-    {"offset": {"line": 40, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
-}

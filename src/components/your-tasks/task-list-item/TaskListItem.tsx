@@ -5,9 +5,15 @@ import {Box, Button, Card, Chip, Divider, Typography} from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import SendIcon from '@mui/icons-material/Send';
 import SeeDetailsDialog from './see-details-dialog/SeeDetailsDialog';
+import {extractDestinationFromRequest, extractEquipmentTypeFromRequest, extractOriginFromRequest} from '@/helpers/data';
 
-const TaskListItem = () => {
+const TaskListItem = ({data}) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  
+  const customer = data.mcleod.customerDetails;
+  const origin = extractOriginFromRequest(data.request);
+  const destination = extractDestinationFromRequest(data.request);
+  const equipmentType = extractEquipmentTypeFromRequest(data.request);
 
   return (
     <React.Fragment>
@@ -28,27 +34,27 @@ const TaskListItem = () => {
                   }}>
                   <Grid>
                     <Typography style={{fontWeight: 400, fontSize: 18, color: '#808495'}}>Customer</Typography>
-                    <Typography style={{fontWeight: 500, fontSize: 20, color: '#000000'}}>ABC Supply</Typography>
-                    <Typography style={{fontWeight: 400, fontSize: 16, color: '#808495'}}>MBA#641</Typography>
+                    <Typography style={{fontWeight: 500, fontSize: 20, color: '#000000'}}>{customer?.name || '--'}</Typography>
+                    <Typography style={{fontWeight: 400, fontSize: 16, color: '#808495'}}>{customer?.id || '--'}</Typography>
                   </Grid>
                   <Grid>
                     <Typography style={{fontWeight: 400, fontSize: 18, color: '#808495'}}>Origin</Typography>
-                    <Typography style={{fontWeight: 500, fontSize: 20, color: '#000000'}}>Tampa, FL</Typography>
-                    <Typography style={{fontWeight: 400, fontSize: 16, color: '#808495'}}>33169</Typography>
+                    <Typography style={{fontWeight: 500, fontSize: 20, color: '#000000'}}>{`${origin?.city}, ${origin?.state}`}</Typography>
+                    <Typography style={{fontWeight: 400, fontSize: 16, color: '#808495'}}>{origin?.postalCode}</Typography>
                   </Grid>
                   <Grid>
                     <Typography style={{fontWeight: 400, fontSize: 18, color: '#808495'}}>Destination</Typography>
-                    <Typography style={{fontWeight: 500, fontSize: 20, color: '#000000'}}>ABC Supply</Typography>
-                    <Typography style={{fontWeight: 400, fontSize: 16, color: '#808495'}}>#504</Typography>
+                    <Typography style={{fontWeight: 500, fontSize: 20, color: '#000000'}}>{`${destination?.city}, ${destination?.state}`}</Typography>
+                    <Typography style={{fontWeight: 400, fontSize: 16, color: '#808495'}}>{destination?.postalCode || '--'}</Typography>
                   </Grid>
                   <Grid>
-                    <Typography style={{fontWeight: 400, fontSize: 18, color: '#808495'}}>Commodity</Typography>
-                    <Typography style={{fontWeight: 500, fontSize: 20, color: '#000000'}}>Toys</Typography>
+                    <Typography style={{fontWeight: 400, fontSize: 18, color: '#808495'}}>Equipment Type</Typography>
+                    <Typography style={{fontWeight: 500, fontSize: 20, color: '#000000'}}>{equipmentType}</Typography>
                     <Typography style={{fontWeight: 400, fontSize: 16, color: '#808495'}}>.</Typography>
                   </Grid>
                   <Grid>
                     <Typography style={{fontWeight: 400, fontSize: 18, color: '#808495'}}>Elapsed Time</Typography>
-                    <Typography style={{fontWeight: 500, fontSize: 20, color: '#000000'}}>1 Hour</Typography>
+                    <Typography style={{fontWeight: 500, fontSize: 20, color: '#000000'}}>--</Typography>
                     <Typography style={{fontWeight: 400, fontSize: 16, color: '#808495'}}>See Exact Time</Typography>
                   </Grid>
                 </Grid>
@@ -65,7 +71,7 @@ const TaskListItem = () => {
           </Grid>
         </Card>
       </Box>
-      <SeeDetailsDialog open={dialogOpen} setDialogOpen={setDialogOpen} />
+      <SeeDetailsDialog open={dialogOpen} setDialogOpen={setDialogOpen} data={data} />
     </React.Fragment>
   );
 };

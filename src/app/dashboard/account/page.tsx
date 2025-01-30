@@ -1,9 +1,13 @@
-import React from 'react'
+import MultiStopInput from '@/components/multiple-stop/MultipleStop';
+import React from 'react';
 
 const Page = () => {
   return (
-    <div>Account</div>
-  )
-}
+    <div>
+      Account
+      <MultiStopInput />
+    </div>
+  );
+};
 
-export default Page
+export default Page;
