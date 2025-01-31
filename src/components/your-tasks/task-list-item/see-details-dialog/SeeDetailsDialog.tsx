@@ -17,15 +17,11 @@ interface SeeDetailsDialogProps {
 const SeeDetailsDialog: React.FC<SeeDetailsDialogProps> = ({open, setDialogOpen, data}) => {
   const handleClose = () => setDialogOpen(false);
 
-  const customer = data.mcleod.customerDetails;
-  const origin = extractOriginFromRequest(data.request);
-  const destination = extractDestinationFromRequest(data.request);
-  const equipmentType = extractEquipmentTypeFromRequest(data.request);
-
-  const historicalData =  extractHistoricalDataFromDat(data.dat)
-
-
-
+  const customer = data?.mcleod?.customerDetails;
+  const origin = extractOriginFromRequest(data?.request);
+  const destination = extractDestinationFromRequest(data?.request);
+  const equipmentType = extractEquipmentTypeFromRequest(data?.request);
+  const historicalData = extractHistoricalDataFromDat(data?.dat);
 
   return (
     <Dialog fullWidth maxWidth="xl" open={open} onClose={handleClose}>

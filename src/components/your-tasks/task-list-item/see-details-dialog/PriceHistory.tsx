@@ -3,7 +3,7 @@
 import React, {useMemo, useState} from 'react';
 import {Chart as ChartJS, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Title, ChartOptions, ChartData, Plugin} from 'chart.js';
 import {Line} from 'react-chartjs-2';
-import {Card, Grid2 as Grid, ToggleButton, ToggleButtonGroup} from '@mui/material';
+import {Card, Grid2 as Grid, ToggleButton, ToggleButtonGroup, Typography} from '@mui/material';
 
 // Register Chart.js components
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Title);
@@ -150,16 +150,25 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({chartData}) => {
   return (
     <Card variant="outlined" sx={{p: 2, width: '100%', height: 400, marginTop: 4}}>
       <Grid container>
-        {/* Button Group - Aligned to Right */}
-        <Grid size={12} display="flex" justifyContent="flex-end" alignItems="center" sx={{mb: 1}}>
-          <ToggleButtonGroup   size="small" color="primary" value={chartView} exclusive onChange={(e, view) => setChartView(view)} aria-label="Chart View">
-            <ToggleButton disabled value="3months">3 Months</ToggleButton>
-            <ToggleButton disabled value="6months">6 Months</ToggleButton>
-            <ToggleButton  value="all">All</ToggleButton>
+        {/* Row for Text (Left) & Buttons (Right) */}
+        <Grid size={12} display="flex" justifyContent="space-between" alignItems="center" sx={{mb: 1}}>
+          {/* Text Aligned Left */}
+          <Typography variant="subtitle1" color="textSecondary">
+            Price History
+          </Typography>
+
+          {/* Toggle Buttons Aligned Right */}
+          <ToggleButtonGroup size="small" color="primary" value={chartView} exclusive onChange={(e, view) => setChartView(view)} aria-label="Chart View">
+            <ToggleButton disabled value="3months">
+              3 Months
+            </ToggleButton>
+            <ToggleButton disabled value="6months">
+              6 Months
+            </ToggleButton>
+            <ToggleButton value="all">All</ToggleButton>
           </ToggleButtonGroup>
         </Grid>
 
-        {/* Chart - Full Width */}
         <Grid size={12} height={300}>
           <Line data={data} options={options} plugins={[errorBarsPlugin]} />
         </Grid>
