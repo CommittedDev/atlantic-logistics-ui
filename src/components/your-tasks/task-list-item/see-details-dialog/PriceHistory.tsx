@@ -1,84 +1,163 @@
-import React from 'react';
-import {Card} from '@mui/material';
-import Chart from 'react-apexcharts';
-import {ApexOptions} from 'apexcharts';
+'use client';
 
-const PriceHistory = () => {
-  const historicalData = [
-    {year: 2023, month: 12, perTrip: {rateUsd: 246.94, highUsd: 264.44, lowUsd: 192.67}},
-    {year: 2024, month: 1, perTrip: {rateUsd: 275.03, highUsd: 275.04, lowUsd: 197.9}},
-    {year: 2024, month: 2, perTrip: {rateUsd: 277.01, highUsd: 289.99, lowUsd: 224.87}},
-    {year: 2024, month: 3, perTrip: {rateUsd: 321.8, highUsd: 321.81, lowUsd: 222.35}},
-    {year: 2024, month: 4, perTrip: {rateUsd: 276.43, highUsd: 276.44, lowUsd: 198.88}},
-    {year: 2024, month: 5, perTrip: {rateUsd: 265, highUsd: 265.01, lowUsd: 199.94}},
-    {year: 2024, month: 6, perTrip: {rateUsd: 245.56, highUsd: 262.05, lowUsd: 198.82}},
-    {year: 2024, month: 7, perTrip: {rateUsd: 271.15, highUsd: 271.16, lowUsd: 196.49}},
-    {year: 2024, month: 8, perTrip: {rateUsd: 294.35, highUsd: 294.36, lowUsd: 198.18}},
-    {year: 2024, month: 9, perTrip: {rateUsd: 296.31, highUsd: 330.31, lowUsd: 197.79}},
-    {year: 2024, month: 10, perTrip: {rateUsd: 285.97, highUsd: 285.98, lowUsd: 215.24}},
-    {year: 2024, month: 11, perTrip: {rateUsd: 306.54, highUsd: 306.55, lowUsd: 206.38}},
-    {year: 2024, month: 12, perTrip: {rateUsd: 296.5, highUsd: 327.9, lowUsd: 215.54}},
-  ];
+import React, { useMemo } from 'react';
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip,
+  Title,
+  ChartOptions,
+  ChartData,
+  Plugin,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import { Card } from '@mui/material';
 
-  // Generate formatted x-axis labels
-  const categories = historicalData.map(({year, month}) => `${year}-${month.toString().padStart(2, '0')}`);
+// Register Chart.js components
+ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Title);
 
-  // Define chart options
-  const options: ApexOptions = {
-    chart: {
-      type: 'line',
-      height: 350,
-      zoom: {enabled: false},
-    },
-    stroke: {
-      width: 2, // Main line
-      curve: 'smooth',
-    },
-    markers: {
-      size: [0, 5, 5], // No markers for rateUsd, dots for high & low
-      colors: ['#ff9800', '#ff9800'], // Error bar colors
-    },
-    title: {
-      text: 'Historical Rate Trends',
-      align: 'left',
-    },
-    xaxis: {
-      categories,
-      title: {text: 'Year-Month'},
-    },
-    yaxis: {
-      title: {text: 'Rate (USD)'},
-    },
-    tooltip: {
-      shared: true,
-      intersect: false,
-    },
-    legend: {
-      show: false,
+// Convert numeric month to label (e.g., 1 -> Jan)
+const getMonthLabel = (month: number) =>
+  new Date(2024, month - 1, 1).toLocaleString('default', { month: 'short' });
+
+interface PriceHistoryProps {
+  chartData: {
+    year: number;
+    month: number;
+    perTrip: {
+      rateUsd: number;
+      highUsd: number;
+      lowUsd: number;
+    };
+  }[];
+}
+
+const PriceHistory: React.FC<PriceHistoryProps> = ({ chartData }) => {
+  // Memoized data extraction
+  const { labels, mainValues, minValues, maxValues } = useMemo(() => {
+    const labels = chartData.map((data) => `${getMonthLabel(data.month)}`);
+    const mainValues = chartData.map((data) => data.perTrip.rateUsd);
+    const minValues = chartData.map((data) => data.perTrip.lowUsd);
+    const maxValues = chartData.map((data) => data.perTrip.highUsd);
+    return { labels, mainValues, minValues, maxValues };
+  }, [chartData]);
+
+  // Chart data
+  const data: ChartData<'line'> = {
+    labels,
+    datasets: [
+      {
+        label: 'Confidence Interval',
+        data: maxValues,
+        borderColor: 'rgba(218,165,32, 0.2)',
+        backgroundColor: 'rgba(218,165,32, 0.1)',
+        fill: '-1',
+        borderWidth: 0,
+        pointRadius: 0,
+      },
+      {
+        label: 'Lower Bound',
+        data: minValues,
+        borderColor: 'rgba(218,165,32, 0.2)',
+        backgroundColor: 'rgba(218,165,32, 0.1)',
+        fill: '+1',
+        borderWidth: 0,
+        pointRadius: 0,
+      },
+      {
+        label: 'Price History',
+        data: mainValues,
+        borderColor: 'goldenrod',
+        backgroundColor: 'rgba(218,165,32, 0.2)',
+        pointBackgroundColor: 'goldenrod',
+        borderWidth: 2,
+        tension: 0.3,
+        fill: false,
+      },
+    ],
+  };
+
+  // Custom Plugin for Error Bars
+  const errorBarsPlugin: Plugin<'line'> = {
+    id: 'errorBarsPlugin',
+    afterDatasetsDraw(chart) {
+      const ctx = chart.ctx;
+      if (!chart.scales.x || !chart.scales.y) return;
+
+      chart.data.datasets[2].data.forEach((_, index) => {
+        const x = chart.scales.x.getPixelForValue(index);
+        const yMin = chart.scales.y.getPixelForValue(minValues[index]);
+        const yMax = chart.scales.y.getPixelForValue(maxValues[index]);
+
+        ctx.save();
+        ctx.strokeStyle = 'goldenrod';
+        ctx.lineWidth = 2;
+
+        // Draw vertical error bars
+        ctx.beginPath();
+        ctx.moveTo(x, yMin);
+        ctx.lineTo(x, yMax);
+        ctx.stroke();
+
+        // Draw top horizontal tick
+        ctx.beginPath();
+        ctx.moveTo(x - 5, yMax);
+        ctx.lineTo(x + 5, yMax);
+        ctx.stroke();
+
+        // Draw bottom horizontal tick
+        ctx.beginPath();
+        ctx.moveTo(x - 5, yMin);
+        ctx.lineTo(x + 5, yMin);
+        ctx.stroke();
+
+        ctx.restore();
+      });
     },
   };
 
-  const series = [
-    {
-      name: 'Rate (USD)',
-      type: 'line',
-      data: historicalData.map(({perTrip}) => perTrip.rateUsd),
+  // Chart options with "$" symbol on Y-axis and defined height/width
+  const options: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false, // Allows us to define height & width manually
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: function (tooltipItem) {
+            const index = tooltipItem.dataIndex;
+            return `Price: $${mainValues[index]} (±$${maxValues[index] - mainValues[index]})`;
+          },
+        },
+      },
     },
-    {
-      name: 'High USD',
-      type: 'scatter',
-      data: historicalData.map(({perTrip}) => perTrip.highUsd),
+    scales: {
+      y: {
+        min: Math.min(...minValues) - 20,
+        max: Math.max(...maxValues) + 20,
+        ticks: {
+          stepSize: 50,
+          callback: function (value) {
+            return `$${value}`; // Add "$" symbol
+          },
+        },
+      },
+      x: {
+        ticks: {
+          autoSkip: false,
+        },
+      },
     },
-    {
-      name: 'Low USD',
-      type: 'scatter',
-      data: historicalData.map(({perTrip}) => perTrip.lowUsd),
-    },
-  ];
+  };
 
   return (
-    <Card variant="outlined" sx={{p: 2}} style={{width: '100%', marginTop: 10}}>
-      <Chart options={options} series={series} height={400} />
+    <Card variant="outlined" sx={{ p: 2, width: '100%', height: 400, marginTop: 4 }}>
+      <Line data={data} options={options} plugins={[errorBarsPlugin]} />
     </Card>
   );
 };

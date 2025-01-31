@@ -21,3 +21,7 @@ export const extractDestinationFromRequest = (request: object) => {
 export const extractEquipmentTypeFromRequest = (request: object) => {
   return request?.equipment?.requestedType || null;
 };
+
+export const extractHistoricalDataFromDat=(dat:object)=>{
+  return dat?.byLeg[0]?.historicalRates?.historicalData
+}

@@ -6,7 +6,7 @@ import Volatility from './Volatility';
 import PriceHistory from './PriceHistory';
 import SendIcon from '@mui/icons-material/Send';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import {extractDestinationFromRequest, extractEquipmentTypeFromRequest, extractOriginFromRequest} from '@/helpers/data';
+import {extractDestinationFromRequest, extractEquipmentTypeFromRequest, extractHistoricalDataFromDat, extractOriginFromRequest} from '@/helpers/data';
 
 interface SeeDetailsDialogProps {
   open: boolean;
@@ -21,6 +21,11 @@ const SeeDetailsDialog: React.FC<SeeDetailsDialogProps> = ({open, setDialogOpen,
   const origin = extractOriginFromRequest(data.request);
   const destination = extractDestinationFromRequest(data.request);
   const equipmentType = extractEquipmentTypeFromRequest(data.request);
+
+  const historicalData =  extractHistoricalDataFromDat(data.dat)
+
+
+
 
   return (
     <Dialog fullWidth maxWidth="xl" open={open} onClose={handleClose}>
@@ -100,7 +105,7 @@ const SeeDetailsDialog: React.FC<SeeDetailsDialogProps> = ({open, setDialogOpen,
               <SupplyDemand />
               <Volatility />
             </Stack>
-            <PriceHistory />
+            <PriceHistory chartData={historicalData} />
 
             <Card variant="outlined" style={{marginTop: 10, padding: 10}}>
               <Stack direction="row" spacing={1} justifyContent="space-between">
