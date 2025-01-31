@@ -1,27 +1,15 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import {
-  Chart as ChartJS,
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  Tooltip,
-  Title,
-  ChartOptions,
-  ChartData,
-  Plugin,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
-import { Card } from '@mui/material';
+import React, {useMemo, useState} from 'react';
+import {Chart as ChartJS, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Title, ChartOptions, ChartData, Plugin} from 'chart.js';
+import {Line} from 'react-chartjs-2';
+import {Card, Grid2 as Grid, ToggleButton, ToggleButtonGroup} from '@mui/material';
 
 // Register Chart.js components
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Title);
 
-// Convert numeric month to label (e.g., 1 -> Jan)
-const getMonthLabel = (month: number) =>
-  new Date(2024, month - 1, 1).toLocaleString('default', { month: 'short' });
+// Convert numeric month & year to label (e.g., "Jan 2024")
+const getMonthYearLabel = (year: number, month: number) => new Date(year, month - 1, 1).toLocaleString('default', {month: 'short', year: 'numeric'});
 
 interface PriceHistoryProps {
   chartData: {
@@ -35,14 +23,16 @@ interface PriceHistoryProps {
   }[];
 }
 
-const PriceHistory: React.FC<PriceHistoryProps> = ({ chartData }) => {
+const PriceHistory: React.FC<PriceHistoryProps> = ({chartData}) => {
+  const [chartView, setChartView] = useState('all');
+
   // Memoized data extraction
-  const { labels, mainValues, minValues, maxValues } = useMemo(() => {
-    const labels = chartData.map((data) => `${getMonthLabel(data.month)}`);
-    const mainValues = chartData.map((data) => data.perTrip.rateUsd);
-    const minValues = chartData.map((data) => data.perTrip.lowUsd);
-    const maxValues = chartData.map((data) => data.perTrip.highUsd);
-    return { labels, mainValues, minValues, maxValues };
+  const {labels, mainValues, minValues, maxValues} = useMemo(() => {
+    const labels = chartData.map(data => getMonthYearLabel(data.year, data.month));
+    const mainValues = chartData.map(data => data.perTrip.rateUsd);
+    const minValues = chartData.map(data => data.perTrip.lowUsd);
+    const maxValues = chartData.map(data => data.perTrip.highUsd);
+    return {labels, mainValues, minValues, maxValues};
   }, [chartData]);
 
   // Chart data
@@ -119,7 +109,7 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ chartData }) => {
     },
   };
 
-  // Chart options with "$" symbol on Y-axis and defined height/width
+  // Chart options with "$" symbol on Y-axis and "MMM YYYY" format on X-axis
   const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false, // Allows us to define height & width manually
@@ -150,14 +140,30 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ chartData }) => {
       x: {
         ticks: {
           autoSkip: false,
+          maxRotation: 45, // Rotate labels slightly for better visibility
+          minRotation: 25,
         },
       },
     },
   };
 
   return (
-    <Card variant="outlined" sx={{ p: 2, width: '100%', height: 400, marginTop: 4 }}>
-      <Line data={data} options={options} plugins={[errorBarsPlugin]} />
+    <Card variant="outlined" sx={{p: 2, width: '100%', height: 400, marginTop: 4}}>
+      <Grid container>
+        {/* Button Group - Aligned to Right */}
+        <Grid size={12} display="flex" justifyContent="flex-end" alignItems="center" sx={{mb: 1}}>
+          <ToggleButtonGroup   size="small" color="primary" value={chartView} exclusive onChange={(e, view) => setChartView(view)} aria-label="Chart View">
+            <ToggleButton disabled value="3months">3 Months</ToggleButton>
+            <ToggleButton disabled value="6months">6 Months</ToggleButton>
+            <ToggleButton  value="all">All</ToggleButton>
+          </ToggleButtonGroup>
+        </Grid>
+
+        {/* Chart - Full Width */}
+        <Grid size={12} height={300}>
+          <Line data={data} options={options} plugins={[errorBarsPlugin]} />
+        </Grid>
+      </Grid>
     </Card>
   );
 };
