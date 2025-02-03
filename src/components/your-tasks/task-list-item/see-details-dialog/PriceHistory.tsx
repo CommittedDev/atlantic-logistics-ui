@@ -1,18 +1,23 @@
 'use client';
 
 import React, {useMemo, useState} from 'react';
-import {Chart as ChartJS, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Title, ChartOptions, ChartData, Plugin} from 'chart.js';
+import {Chart as ChartJS, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Title, ChartOptions, ChartData, Plugin, Legend} from 'chart.js';
 import {Line} from 'react-chartjs-2';
 import {Card, Grid2 as Grid, ToggleButton, ToggleButtonGroup, Typography} from '@mui/material';
 
 // Register Chart.js components
-ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Title);
+ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Title, Legend);
 
 // Convert numeric month & year to label (e.g., "Jan 2024")
 const getMonthYearLabel = (year: number, month: number) => new Date(year, month - 1, 1).toLocaleString('default', {month: 'short', year: 'numeric'});
 
 interface PriceHistoryProps {
-  chartData: {
+  mcleodSeasonalTrends: {
+    averageRate: string;
+    month: number;
+    orderCount: number;
+  };
+  datHistoricalData: {
     year: number;
     month: number;
     perTrip: {
@@ -23,17 +28,17 @@ interface PriceHistoryProps {
   }[];
 }
 
-const PriceHistory: React.FC<PriceHistoryProps> = ({chartData}) => {
+const PriceHistory: React.FC<PriceHistoryProps> = ({datHistoricalData, mcleodSeasonalTrends}) => {
   const [chartView, setChartView] = useState('13mhistorical');
 
   // Memoized data extraction
   const {labels, mainValues, minValues, maxValues} = useMemo(() => {
-    const labels = chartData.map(data => getMonthYearLabel(data.year, data.month));
-    const mainValues = chartData.map(data => data.perTrip.rateUsd);
-    const minValues = chartData.map(data => data.perTrip.lowUsd);
-    const maxValues = chartData.map(data => data.perTrip.highUsd);
+    const labels = datHistoricalData.map(data => getMonthYearLabel(data.year, data.month));
+    const mainValues = datHistoricalData.map(data => data.perTrip.rateUsd);
+    const minValues = datHistoricalData.map(data => data.perTrip.lowUsd);
+    const maxValues = datHistoricalData.map(data => data.perTrip.highUsd);
     return {labels, mainValues, minValues, maxValues};
-  }, [chartData]);
+  }, [datHistoricalData]);
 
   // Chart data
   const data: ChartData<'line'> = {
@@ -58,11 +63,24 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({chartData}) => {
         pointRadius: 0,
       },
       {
-        label: 'Price History',
+        label: 'DAT Price History',
         data: mainValues,
         borderColor: 'goldenrod',
         backgroundColor: 'rgba(218,165,32, 0.2)',
         pointBackgroundColor: 'goldenrod',
+        borderWidth: 2,
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'McLeod Seasonal Trends',
+        data: datHistoricalData.map(data => {
+          const trend = mcleodSeasonalTrends.find(t => t.month === data.month);
+          return trend ? trend.averageRate : null;
+        }),
+        borderColor: 'green',
+        backgroundColor: 'rgba(34, 139, 34, 0.2)',
+        pointBackgroundColor: 'green',
         borderWidth: 2,
         tension: 0.3,
         fill: false,
@@ -109,38 +127,63 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({chartData}) => {
     },
   };
 
-  // Chart options with "$" symbol on Y-axis and "MMM YYYY" format on X-axis
+  // Calculate min & max dynamically including McLeod Seasonal Trends
+  const minYValue = Math.min(...minValues, ...mcleodSeasonalTrends.map(trend => trend.averageRate)) - 20;
+
+  const maxYValue = Math.max(...maxValues, ...mcleodSeasonalTrends.map(trend => trend.averageRate)) + 20;
+
+  //Chart Options with Dynamic Y-Axis Adjustment
   const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false, // Allows us to define height & width manually
     plugins: {
       legend: {
-        display: false,
+        display: true,
+        position: 'bottom',
+        labels: {
+          usePointStyle: true, // Use small circles instead of box legend
+        },
       },
       tooltip: {
         callbacks: {
+          title: function (tooltipItems) {
+            const index = tooltipItems[0].dataIndex;
+            return labels[index];
+          },
           label: function (tooltipItem) {
+            const datasetLabel = tooltipItem.dataset.label;
             const index = tooltipItem.dataIndex;
-            return `Price: $${mainValues[index]} (±$${maxValues[index] - mainValues[index]})`;
+
+            if (datasetLabel === 'DAT Price History') {
+              const avg = mainValues[index];
+              const high = maxValues[index];
+              const low = minValues[index];
+
+              return [`Spot Rate`, `Average: $${avg}`, `Highest: $${high}`, `Lowest: $${low}`];
+            } else if (datasetLabel === 'McLeod Seasonal Trends') {
+              const trend = mcleodSeasonalTrends.find(t => t.month === datHistoricalData[index].month);
+              return trend ? [`Seasonal Trend`, `Average: $${trend.averageRate}`] : ['No Data'];
+            }
+            return '';
           },
         },
       },
     },
     scales: {
       y: {
-        min: Math.min(...minValues) - 20,
-        max: Math.max(...maxValues) + 20,
+        min: minYValue,
+        max: maxYValue,
         ticks: {
           stepSize: 50,
           callback: function (value) {
-            return `$${value}`; // Add "$" symbol
+            return `$${value}`;
           },
         },
       },
       x: {
         ticks: {
           autoSkip: false,
-          maxRotation: 45, // Rotate labels slightly for better visibility
+          maxRotation: 45,
           minRotation: 25,
         },
       },

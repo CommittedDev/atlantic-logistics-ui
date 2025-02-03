@@ -22,6 +22,10 @@ export const extractEquipmentTypeFromRequest = (request: object) => {
   return request?.equipment?.requestedType || null;
 };
 
-export const extractHistoricalDataFromDat=(dat:object)=>{
-  return dat?.byLeg[0]?.historicalRates?.historicalData
-}
+export const extractHistoricalDataFromDat = (dat: object) => {
+  return dat?.byLeg[0]?.historicalRates?.historicalData;
+};
+
+export const extractSeasonalTrendsFromMcLeod = (mcleod: object) => {
+  return mcleod?.mcleodLaneAnalytics?.summary?.seasonalTrends;
+};

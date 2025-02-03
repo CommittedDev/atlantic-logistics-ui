@@ -6,7 +6,7 @@ import Volatility from './Volatility';
 import PriceHistory from './PriceHistory';
 import SendIcon from '@mui/icons-material/Send';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import {extractDestinationFromRequest, extractEquipmentTypeFromRequest, extractHistoricalDataFromDat, extractOriginFromRequest} from '@/helpers/data';
+import {extractDestinationFromRequest, extractEquipmentTypeFromRequest, extractHistoricalDataFromDat, extractOriginFromRequest, extractSeasonalTrendsFromMcLeod} from '@/helpers/data';
 
 interface SeeDetailsDialogProps {
   open: boolean;
@@ -22,6 +22,7 @@ const SeeDetailsDialog: React.FC<SeeDetailsDialogProps> = ({open, setDialogOpen,
   const destination = extractDestinationFromRequest(data?.request);
   const equipmentType = extractEquipmentTypeFromRequest(data?.request);
   const historicalData = extractHistoricalDataFromDat(data?.dat);
+  const mcleodSeasonalTrends = extractSeasonalTrendsFromMcLeod(data?.mcleod)
 
   return (
     <Dialog fullWidth maxWidth="xl" open={open} onClose={handleClose}>
@@ -101,7 +102,7 @@ const SeeDetailsDialog: React.FC<SeeDetailsDialogProps> = ({open, setDialogOpen,
               <SupplyDemand />
               <Volatility />
             </Stack>
-            <PriceHistory chartData={historicalData} />
+            <PriceHistory datHistoricalData={historicalData} mcleodSeasonalTrends={mcleodSeasonalTrends} />
 
             <Card variant="outlined" style={{marginTop: 10, padding: 10}}>
               <Stack direction="row" spacing={1} justifyContent="space-between">
