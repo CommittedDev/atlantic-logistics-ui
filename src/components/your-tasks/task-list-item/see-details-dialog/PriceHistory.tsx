@@ -29,7 +29,7 @@ interface PriceHistoryProps {
 }
 
 const PriceHistory: React.FC<PriceHistoryProps> = ({datHistoricalData, mcleodSeasonalTrends}) => {
-  const [chartView, setChartView] = useState('13mhistorical');
+  const [chartView, setChartView] = useState('all');
 
   // Memoized data extraction
   const {labels, mainValues, minValues, maxValues} = useMemo(() => {
@@ -201,17 +201,21 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({datHistoricalData, mcleodSea
           </Typography>
 
           {/* Toggle Buttons Aligned Right */}
-          <ToggleButtonGroup size="small" color="primary" value={chartView} exclusive onChange={(e, view) => setChartView(view)} aria-label="Chart View">
-            <ToggleButton value="13mhistorical">13M Historical</ToggleButton>
-            <ToggleButton disabled value="35dforecast">
-              35D Forecast
-            </ToggleButton>
-            <ToggleButton disabled value="13mforecast">
-              13M Forecast
-            </ToggleButton>
-            <ToggleButton disabled value="all">
-              All
-            </ToggleButton>
+          <ToggleButtonGroup
+            size="small"
+            color="primary"
+            value={chartView}
+            exclusive
+            onChange={(e, view) => {
+              if (view !== null) {
+                setChartView(view);
+              }
+            }}
+            aria-label="Chart View">
+            <ToggleButton disabled value="13mhistorical">13M Historical</ToggleButton>
+            <ToggleButton disabled value="35dforecast">35D Forecast</ToggleButton>
+            <ToggleButton disabled value="13mforecast">13M Forecast</ToggleButton>
+            <ToggleButton value="all">All</ToggleButton>
           </ToggleButtonGroup>
         </Grid>
 
